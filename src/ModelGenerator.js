@@ -106,10 +106,17 @@ function serializeObj(meshes) {
             out += `vn ${vertexNormal.x} ${vertexNormal.y} ${vertexNormal.z}\n`;
         }
 
-        var face, faceVertices, faceMaterial;
+        var face, faceVertices, faceMaterial, previousFaceMaterial;
+        previousFaceMaterial = '';
         for (var l = 0; l < meshes[i].faces.length; l++) {
             face = meshes[i].faces[l];
-            faceMaterial = face.material;
+
+            if (face.material) {
+                faceMaterial = face.material;
+            } else {
+                faceMaterial = 'Default';
+            }
+
             faceVertices = face.vertices
                 .map(vertex => {
                     return (
@@ -123,11 +130,11 @@ function serializeObj(meshes) {
                 })
                 .join(' ');
 
-            if (faceMaterial) {
+            if (faceMaterial !== previousFaceMaterial) {
                 out += `usemtl ${faceMaterial}\n`;
-            } else {
-                out += `usemtl Default\n`;
+                previousFaceMaterial = faceMaterial;
             }
+
             out += `f ${faceVertices}\n`;
         }
 
