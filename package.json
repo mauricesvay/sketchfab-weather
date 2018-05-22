@@ -1,0 +1,20 @@
+{
+  "name": "sketchfab-weather",
+  "version": "1.0.0",
+  "description": "Upload 3D model of current weather to Sketchfab",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Sketchfab",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "dotenv": "^5.0.1",
+    "form-data": "^2.3.2",
+    "obj-file-parser": "^0.5.0",
+    "openweather-apis": "^3.3.5",
+    "zip-dir": "^1.0.2"
+  }
+}
