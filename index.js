@@ -13,45 +13,50 @@ const config = {
     WORKING_DIR: path.resolve(process.env.WORKING_DIR)
 };
 
-const files = {
-    ZIP_OUTPUT: path.resolve(config.WORKING_DIR, "weather.zip"),
-    DIR_OUTPUT: path.resolve(config.WORKING_DIR, "weather"),
-    OBJ_OUTPUT: path.resolve(config.WORKING_DIR, "weather/weather.obj")
-};
+const DIR_OUTPUT = path.resolve(config.WORKING_DIR, "weather");
 
-var weather = new Weather({
-    app_id: config.OPENWEATHER_APPID
-});
+main();
 
-weather
-    .getWeather({
-        city_id: config.OPENWEATHER_CITY_ID
-    })
-    .then(async weatherResult => {
-        console.log("Generating model");
-        var modelGenerator = new ModelGenerator({
-            obj_output: files.OBJ_OUTPUT
-        });
-        var modelResult = await modelGenerator.generate(weatherResult);
-
-        console.log("Uploading model");
-        var uploader = new Uploader({
-            sketchfab_model_uid: config.SKETCHFAB_MODEL_UID,
-            sketchfab_token: config.SKETCHFAB_TOKEN,
-            obj_output: files.OBJ_OUTPUT,
-            dir_output: files.DIR_OUTPUT,
-            zip_output: files.ZIP_OUTPUT
-        });
-
-        try {
-            var uploadResult = await uploader.upload();
-        } catch (e) {
-            if (e.response) {
-                console.error(e.response.data);
-            } else {
-                console.error(e);
-            }
-        }
-
-        console.log("Uploaded");
+async function main() {
+    console.log("Getting weather data");
+    const weather = new Weather({
+        app_id: config.OPENWEATHER_APPID
     });
+    try {
+        var weatherResult = await weather.getWeather({
+            city_id: config.OPENWEATHER_CITY_ID
+        });
+        if (weatherResult.cod !== 200) {
+            throw new Error(weatherResult);
+        }
+    } catch (err) {
+        return console.error("Can not get weather data", err);
+    }
+
+    console.log("Generating model");
+    const modelGenerator = new ModelGenerator({
+        dir_output: DIR_OUTPUT
+    });
+    try {
+        var modelResult = await modelGenerator.generate(weatherResult);
+    } catch (err) {
+        return console.error("Cannot generate model", err);
+    }
+
+    console.log("Uploading model");
+    const uploader = new Uploader({
+        sketchfab_model_uid: config.SKETCHFAB_MODEL_UID,
+        sketchfab_token: config.SKETCHFAB_TOKEN,
+        model_dir: DIR_OUTPUT
+    });
+    try {
+        var uploadResult = await uploader.upload();
+        console.log("Uploaded");
+    } catch (err) {
+        if (err.response) {
+            console.error(err.response.data);
+        } else {
+            console.error(err);
+        }
+    }
+}
