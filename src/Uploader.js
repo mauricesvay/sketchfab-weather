@@ -5,13 +5,11 @@ const zipdir = require("zip-dir");
 function Uploader(params) {
     this.sketchfab_model_uid = params.sketchfab_model_uid;
     this.sketchfab_token = params.sketchfab_token;
-    this.obj_output = params.obj_output;
-    this.dir_output = params.dir_output;
-    this.zip_output = params.zip_output;
+    this.model_dir = params.model_dir;
 }
 
 Uploader.prototype = {
-    archive: function(dir, output) {
+    archive: function(dir) {
         return new Promise((resolve, reject) => {
             zipdir(dir, function(err, buffer) {
                 if (err) {
@@ -26,7 +24,7 @@ Uploader.prototype = {
     upload: async function() {
         var buffer;
         try {
-            buffer = await this.archive(this.dir_output, this.zip_output);
+            buffer = await this.archive(this.model_dir);
         } catch (e) {
             throw new Error("Cannot generate archive");
         }

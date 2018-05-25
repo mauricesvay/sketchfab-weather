@@ -15,8 +15,7 @@ const config = {
 
 const files = {
     ZIP_OUTPUT: path.resolve(config.WORKING_DIR, "weather.zip"),
-    DIR_OUTPUT: path.resolve(config.WORKING_DIR, "weather"),
-    OBJ_OUTPUT: path.resolve(config.WORKING_DIR, "weather/weather.obj")
+    DIR_OUTPUT: path.resolve(config.WORKING_DIR, "weather")
 };
 
 var weather = new Weather({
@@ -30,21 +29,24 @@ weather
     .then(async weatherResult => {
         console.log("Generating model");
         var modelGenerator = new ModelGenerator({
-            obj_output: files.OBJ_OUTPUT
+            dir_output: files.DIR_OUTPUT
         });
-        var modelResult = await modelGenerator.generate(weatherResult);
+        try {
+            var modelResult = await modelGenerator.generate(weatherResult);
+        } catch (err) {
+            console.error("Cannot generate model", err);
+            return;
+        }
 
         console.log("Uploading model");
         var uploader = new Uploader({
             sketchfab_model_uid: config.SKETCHFAB_MODEL_UID,
             sketchfab_token: config.SKETCHFAB_TOKEN,
-            obj_output: files.OBJ_OUTPUT,
-            dir_output: files.DIR_OUTPUT,
-            zip_output: files.ZIP_OUTPUT
+            model_dir: files.DIR_OUTPUT
         });
-
         try {
             var uploadResult = await uploader.upload();
+            console.log("Uploaded");
         } catch (e) {
             if (e.response) {
                 console.error(e.response.data);
@@ -52,6 +54,4 @@ weather
                 console.error(e);
             }
         }
-
-        console.log("Uploaded");
     });
