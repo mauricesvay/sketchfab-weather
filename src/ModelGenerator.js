@@ -35,12 +35,31 @@ ModelGenerator.prototype = {
 
             // Icon
             let iconCode = weatherData.weather[0].icon;
-            if (iconCode.indexOf("01") === 0) {
-                iconCode = "01";
-            } else if (iconCode.indexOf("09") === 0 || iconCode.indexOf("10") === 0) {
-                iconCode = "10";
+            var icons = {
+                "01d": "01d",
+                "01n": "01d",
+                "02d": "02d",
+                "02n": "02d",
+                "03d": "03d",
+                "03n": "03d",
+                "04d": "03d",
+                "04n": "03d",
+                "09d": "10d",
+                "09n": "10d",
+                "10d": "10d",
+                "10n": "10d",
+                "11d": "11d",
+                "11n": "11d",
+                "13d": "13d",
+                "13n": "13d",
+                "50d": "03d",
+                "50n": "03d"
+            };
+
+            if (icons.hasOwnProperty(iconCode)) {
+                iconCode = icons[iconCode];
             } else {
-                iconCode = "03";
+                iconCode = "03d";
             }
 
             try {
