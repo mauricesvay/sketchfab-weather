@@ -31,6 +31,9 @@ ModelGenerator.prototype = {
                 bevelEnabled: true
             });
             const textMesh = new THREE.Mesh(textGeo, material);
+            let bbox = new THREE.Box3().setFromObject(textMesh);
+            const center = bbox.getCenter();
+            textMesh.translateX(-center.x);
             scene.add(textMesh);
 
             // Icon
