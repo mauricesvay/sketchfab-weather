@@ -32,7 +32,8 @@ ModelGenerator.prototype = {
             });
             const textMesh = new THREE.Mesh(textGeo, material);
             let bbox = new THREE.Box3().setFromObject(textMesh);
-            const center = bbox.getCenter();
+            let center = new THREE.Vector3();
+            bbox.getCenter(center);
             textMesh.translateX(-center.x);
             scene.add(textMesh);
 
